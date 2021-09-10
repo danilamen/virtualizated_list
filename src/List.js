@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 function List({ rowCount, rowHeight, rowRenderer, width, height }) {
   const [scrollTop, setScrollTop] = useState(0);
-  //   const [items, setItems] = useState();
 
   const innerHeight = rowCount * rowHeight;
   const startIndex = Math.floor(scrollTop / rowHeight);
@@ -11,10 +10,30 @@ function List({ rowCount, rowHeight, rowRenderer, width, height }) {
     Math.floor((scrollTop + height) / rowHeight)
   );
 
-  //   const visibleItems = useMemo(() => {
+  console.log("render");
+
+  const visibleItems = useMemo(() => {
+    const items = [];
+    for (let i = startIndex; i <= endIndex; i++) {
+      items.push(
+        <li
+          style={{
+            position: "absolute",
+            top: `${i * rowHeight}px`,
+            height: rowHeight,
+          }}
+        >
+          {rowRenderer(i)}
+        </li>
+      );
+    }
+    return items;
+  }, [startIndex]);
+
+  //   function visibleItems() {
+  //     console.log("new items");
   //     const items = [];
   //     for (let i = startIndex; i <= endIndex; i++) {
-  //       console.log("newItems");
   //       items.push(
   //         <li
   //           style={{
@@ -27,24 +46,8 @@ function List({ rowCount, rowHeight, rowRenderer, width, height }) {
   //         </li>
   //       );
   //     }
-  //     setItems(items);
-  //   }, [startIndex, endIndex]);
-
-  const items = [];
-  for (let i = startIndex; i <= endIndex; i++) {
-    console.log("newItems");
-    items.push(
-      <li
-        style={{
-          position: "absolute",
-          top: `${i * rowHeight}px`,
-          height: rowHeight,
-        }}
-      >
-        {rowRenderer(i)}
-      </li>
-    );
-  }
+  //     return items;
+  //   }
 
   const onScroll = (e) => setScrollTop(e.currentTarget.scrollTop);
 
@@ -60,7 +63,7 @@ function List({ rowCount, rowHeight, rowRenderer, width, height }) {
           height: `${innerHeight}px`,
         }}
       >
-        <li>{items}</li>
+        <li>{visibleItems}</li>
       </ul>
     </div>
   );
